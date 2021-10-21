@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="66fe4af1-de81-48fb-be08-4992601dfbac" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="convertFlow" doc:id="a7a04076-76d0-43dc-9f99-d0abfbcb3600" >
+		<http:listener doc:name="Listener" doc:id="77b7348e-6a9c-4593-90bb-ffea23d060c8" config-ref="HTTP_Listener_config1" path="/con"/>
+		<ee:transform doc:name="Transform Message" doc:id="8bf0b20b-9682-441a-8fdf-97b4b1d87332" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	firstname: payload01.firstname,
+	lastname: payload01.lastname,
+	salary: payload01.salary
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:read doc:name="Read" doc:id="36837823-4ae5-4331-9e23-93d26462a8a9" path="#[src/main/resources/in]"/>
+	</flow>
+</mule>
